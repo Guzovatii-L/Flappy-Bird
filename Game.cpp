@@ -109,29 +109,24 @@ void Game::movePipesY()
 
 bool Game::checkCollision()
 {
-	/*int i = 1;
 	for (auto &pipe : pipes){
 				
 		SDL_Rect *r = p.getDest();
-		if (i % 2 == 1)
-			if ((r->x + r->w) >= pipe.getX()) {
-				if ((r->y + r->h) <= (pipe.getY() + pipe.getHeight())) {
-					exit(0);
-					isRunning = false;
-					break;
-				}
-			}
 
-		if (i % 2 == 0)
-			if ((r->x + r->w) >= pipe.getX()) {
-				if ((r->y) >= (pipe.getY() - pipe.getHeight())) {
-					exit(0);
+		if ((r->x + r->w) >= pipe.first.getX() && r->x <= (pipe.first.getX() + pipe.first.getWidth())) {
+			if (r->y <= (pipe.first.getY() + pipe.first.getHeight())) {
 					isRunning = false;
 					break;
-				}
 			}
-		i++;
-	}*/
+		}
+
+		if ((r->x + r->w) >= pipe.second.getX() && r->x <= (pipe.second.getX() + pipe.second.getWidth())) {
+			if ((r->y + r->h) >= (pipe.second.getY() - pipe.second.getHeight())) {
+				isRunning = false;					
+				break;
+			}
+		}
+	}
 	return false;
 }
 
@@ -150,14 +145,6 @@ void Game::handleEvents() {
 		if (event.key.keysym.sym == SDLK_UP)
 		{
 			p.Jump();
-			/*if (!p.jumpState())
-			{
-				p.Jump();
-			}
-			else
-			{
-				p.Gravity();
-			}*/
 		}
 	}
 	else {
@@ -172,7 +159,7 @@ void Game::update() {
 	generatePipes();
 	movePipesX();
 	movePipesY();
-	//checkCollision();
+	checkCollision();
 } 
 
 void Game::render() {
