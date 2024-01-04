@@ -1,5 +1,6 @@
 
 #include "pipes_move.h"
+#include"Game.h"
 
 void obstacle2::moveY(int add) {
 

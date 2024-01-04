@@ -18,4 +18,7 @@ public:
 	void Jump();
 	bool jumpState();
 	void render(SDL_Renderer* r);
+	void write();
+	void read();
+
 };

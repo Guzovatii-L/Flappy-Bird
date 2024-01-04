@@ -48,17 +48,6 @@ void Player::Jump() {
 	jump = true;
 	lastJump = jumpTimer;
 	jHeight = -6;
-	/*if (jumpTimer - lastJump > 20)
-	{
-		acc1 = 0;
-		acc2 = 0;
-		jump = true;
-		lastJump = jumpTimer;
-	}
-	else
-	{
-		Gravity();
-	}*/
 }
 
 
@@ -66,3 +55,38 @@ bool Player::jumpState() {
 
 	return jump;
 }
+
+void Player::write() {
+
+	ofstream MyFile("player.txt", std::ofstream::out | std::ofstream::trunc);
+
+	MyFile << Ypos << endl;
+	MyFile << acc1 << endl;
+	MyFile << acc2 << endl;
+	MyFile << jump << endl;
+	MyFile << jHeight << endl;
+	MyFile << lastJump << endl;
+	MyFile << jumpTimer << endl;
+
+	MyFile.close();
+
+}
+
+void Player::read() {
+
+	ifstream File("player.txt");
+
+	if (File.is_open()) {
+		File >> Ypos;
+		File >> acc1;
+		File >> acc2;
+		File >> jump;
+		File >> jHeight;
+		File >> lastJump;
+		File >> jumpTimer;
+
+		File.close();
+	}
+}
+
+

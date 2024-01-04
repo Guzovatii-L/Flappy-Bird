@@ -1,6 +1,7 @@
 #pragma once
 
 #include"pipes.h"
+using namespace std;
 
 class obstacle2 : public obstacle {
 

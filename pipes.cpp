@@ -54,4 +54,11 @@ void obstacle::render(SDL_Renderer* r) {
 
 }
 
+bool obstacle::getUp() {
+
+	return up;
+}
+
+
+
 

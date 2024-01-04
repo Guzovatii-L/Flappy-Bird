@@ -5,7 +5,6 @@
 #include<iostream>
 using namespace std;
 
-
 Game::Game() {
 
 	isRunning = false;
@@ -37,6 +36,50 @@ void Game::init(const char* name, int x, int y, int width, int height) {
 			p.CreateTexture("textures/player.png", renderer);
 			b.CreateTexture("textures/background.bmp", renderer);
 
+			p.read();
+
+		/*	ifstream F("game.txt");
+
+			if (F.is_open()) {
+				F >> time1;
+				F >> time2;
+				F >> freq;
+				F >> permission;
+
+				F.close();
+			}*/
+
+
+			ifstream File("pipes.txt");
+
+			if (File.is_open()) {
+
+				int x, y, w, h; bool poz, t;
+				while (File >> x >> y >> w >> h >> poz >> t) {
+
+					obstacle2 pipe;
+
+					pipe.setD(x, y, h, w);
+					pipe.setPoz(poz);
+					if (t)
+						pipe.setType();
+
+					obstacle2 pipe2;
+					File >> x >> y >> w >> h >> poz >> t;
+
+					pipe2.setD(x, y, h, w);
+					pipe2.setPoz(poz);
+					if (t)
+						pipe2.setType();
+
+					pipes.push_back({ pipe,pipe2 });
+					
+				}
+
+				File.close();
+
+			}
+
 			s.init();
 		}
 
@@ -50,7 +93,7 @@ void Game::init(const char* name, int x, int y, int width, int height) {
 
 void Game::generatePipes() {
 
-	int time2 = SDL_GetTicks();
+	time2 = SDL_GetTicks();
 	if (time2 - time1 > 2200) {
 
 		obstacle2 pipe;
@@ -125,7 +168,7 @@ bool Game::checkCollision()
 
 		if ((r->x + r->w) >= pipe.second.getX() && r->x <= (pipe.second.getX() + pipe.second.getWidth())) {
 			if ((r->y + r->h) >= (pipe.second.getY() - pipe.second.getHeight())) {
-				isRunning = false;					
+				isRunning = false;
 				break;
 			}
 		}
@@ -149,6 +192,48 @@ void Game::handleEvents() {
 		{
 			p.Jump();
 		}
+
+		if (event.key.keysym.sym == SDLK_ESCAPE)
+		{
+
+			p.write();
+			
+			ofstream File("pipes.txt", std::ofstream::out | std::ofstream::trunc);
+			for (auto& pipe : pipes) {
+				File << pipe.first.getX() << ' ';
+				File << pipe.first.getY() << ' ';
+				File << pipe.first.getWidth() << ' ';
+				File << pipe.first.getHeight() << ' ';
+				File << pipe.first.getUp() << ' ';
+				File << pipe.first.getType() << endl;
+
+				File << pipe.second.getX() << ' ';
+				File << pipe.second.getY() << ' ';
+				File << pipe.second.getWidth() << ' ';
+				File << pipe.second.getHeight() << ' ';
+				File << pipe.second.getUp() << ' ';
+				File << pipe.second.getType() << endl;
+			}
+			File.close();
+
+
+
+
+		/*	ofstream F("game.txt", std::ofstream::out | std::ofstream::trunc);
+
+			F << time1 << endl;
+			F << (time2 + 3000) << endl;
+			F << freq << endl;
+			F << permission << endl;
+
+			F.close();*/
+
+
+
+			isRunning = false;
+
+		}
+		
 	}
 	else {
 		p.Gravity();

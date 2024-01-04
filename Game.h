@@ -8,6 +8,7 @@
 #include"pipes_move.h"
 #include<string>
 #include"Score.h"
+#include <fstream>
 using namespace std;
 
 class Game {
@@ -41,6 +42,4 @@ public:
 	void movePipesX();
 	void movePipesY();
 	bool checkCollision();
-	TTF_Font* getFont();
-
 };

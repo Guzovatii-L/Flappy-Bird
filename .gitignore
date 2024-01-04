@@ -11,3 +11,6 @@ zlib1.dll
 .vs/
 RubikScribble-Regular.ttf
 SDL2_ttf.dll
+game.txt
+player.txt
+pipes.txt

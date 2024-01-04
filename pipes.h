@@ -20,4 +20,5 @@ public:
 	int getHeight();
 	void setH2(int h);
 	void render(SDL_Renderer* r);
+	bool getUp();
 };
