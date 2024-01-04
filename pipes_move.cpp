@@ -16,3 +16,4 @@ bool obstacle2::getType() {
 
 	return type;
 }
+

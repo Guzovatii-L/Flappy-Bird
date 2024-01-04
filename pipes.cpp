@@ -11,6 +11,11 @@ void obstacle::moveX() {
 
 }
 
+void obstacle::setPoz(bool t) {
+
+	up = t;
+}
+
 void obstacle::setH() {
 
 	SDL_Rect *r = getDest();
@@ -39,6 +44,13 @@ int obstacle::getHeight() {
 }
 
 void obstacle::render(SDL_Renderer* r) {
+
+	SDL_SetRenderDrawColor(r, 0, 0, 0, 255);
+	SDL_Rect obstacleRect;
+	if (up == 1)
+		obstacleRect = {getX(), getY(), getWidth(), getHeight() }; else 
+		obstacleRect = {getX(),getY(), getWidth(), -getHeight() };
+	SDL_RenderFillRect(r, &obstacleRect);
 
 }
 

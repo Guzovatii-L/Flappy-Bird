@@ -6,6 +6,8 @@
 #include"background.h"
 #include"pipes.h"
 #include"pipes_move.h"
+#include<string>
+#include"Score.h"
 using namespace std;
 
 class Game {
@@ -18,6 +20,7 @@ private:
 	Player p;
 	background b;
 	vector<pair<obstacle2, obstacle2>>pipes;
+	Score s;
 	int time1;
 	int time2;
 	int freq = 1;
@@ -38,5 +41,6 @@ public:
 	void movePipesX();
 	void movePipesY();
 	bool checkCollision();
+	TTF_Font* getFont();
 
 };

@@ -9,3 +9,5 @@ textures/
 x64/
 zlib1.dll
 .vs/
+RubikScribble-Regular.ttf
+SDL2_ttf.dll

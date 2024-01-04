@@ -11,7 +11,6 @@ Game::Game() {
 	isRunning = false;
 	window = NULL;
 	renderer = NULL;
-	//p.setS(0, 0, 24, 32);
 	p.setD(100, 200, 60, 70);
 }
 
@@ -38,6 +37,7 @@ void Game::init(const char* name, int x, int y, int width, int height) {
 			p.CreateTexture("textures/player.png", renderer);
 			b.CreateTexture("textures/background.bmp", renderer);
 
+			s.init();
 		}
 
 	}
@@ -55,8 +55,11 @@ void Game::generatePipes() {
 
 		obstacle2 pipe;
 		pipe.setD(800, 0, 0, 80);
+		pipe.setPoz(1);
+
 		obstacle2 pipe2;
 		pipe2.setD(800, 600, 0, 80);
+		pipe2.setPoz(0);
 
 		if (freq % 5 == 0) {
 
@@ -160,6 +163,7 @@ void Game::update() {
 	movePipesX();
 	movePipesY();
 	checkCollision();
+	s.updateScore();
 } 
 
 void Game::render() {
@@ -168,16 +172,14 @@ void Game::render() {
 	b.render(renderer);
 	p.render(renderer);
 
-	// Render obstacles
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	for (auto& pipe : pipes) {
-		SDL_Rect obstacleRect, obstacleRect2;
-			obstacleRect = { pipe.first.getX(), pipe.first.getY(), pipe.first.getWidth(), pipe.first.getHeight() }; 
-			obstacleRect2 = { pipe.second.getX(), pipe.second.getY(), pipe.second.getWidth(), -pipe.second.getHeight() }; 
-		SDL_RenderFillRect(renderer, &obstacleRect);
-		SDL_RenderFillRect(renderer, &obstacleRect2);
+	SDL_Color textColor = { 255, 255, 255 };
 
+	for (auto& pipe : pipes) {
+		pipe.first.render(renderer);
+		pipe.second.render(renderer);
 	}
+
+	s.render(renderer);
 
 	SDL_RenderPresent(renderer);
 }
@@ -186,6 +188,7 @@ void Game::clean() {
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
+	TTF_Quit();
 	SDL_Quit();
 
 	cout << "jocul s-a sters" << endl;
@@ -194,5 +197,3 @@ void Game::clean() {
 bool Game::running() {
 	return isRunning;
 }
-
-

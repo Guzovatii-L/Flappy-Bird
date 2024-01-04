@@ -5,8 +5,9 @@
 #include "Game.h"
 
 
+
 int main(int argc, char* args[]) {
-/////
+
 	const int FPS = 50;
 	const int frameDelay = 1000 / FPS;
 
@@ -16,6 +17,7 @@ int main(int argc, char* args[]) {
 	Game* game = new Game;
 
 	game->init("joc", 200, 200, 800, 600);
+
 
 	while (game->running()) {
 
@@ -32,6 +34,8 @@ int main(int argc, char* args[]) {
 
 			SDL_Delay(frameDelay - frameTime);
 		}
+
+
 	}
 
 	game->clean();
