@@ -36,50 +36,7 @@ void Game::init(const char* name, int x, int y, int width, int height) {
 			p.CreateTexture("textures/player.png", renderer);
 			b.CreateTexture("textures/background.bmp", renderer);
 
-			p.read();
-
-		/*	ifstream F("game.txt");
-
-			if (F.is_open()) {
-				F >> time1;
-				F >> time2;
-				F >> freq;
-				F >> permission;
-
-				F.close();
-			}*/
-
-
-			ifstream File("pipes.txt");
-
-			if (File.is_open()) {
-
-				int x, y, w, h; bool poz, t;
-				while (File >> x >> y >> w >> h >> poz >> t) {
-
-					obstacle2 pipe;
-
-					pipe.setD(x, y, h, w);
-					pipe.setPoz(poz);
-					if (t)
-						pipe.setType();
-
-					obstacle2 pipe2;
-					File >> x >> y >> w >> h >> poz >> t;
-
-					pipe2.setD(x, y, h, w);
-					pipe2.setPoz(poz);
-					if (t)
-						pipe2.setType();
-
-					pipes.push_back({ pipe,pipe2 });
-					
-				}
-
-				File.close();
-
-			}
-
+			menu.init();
 			s.init();
 		}
 
@@ -91,10 +48,108 @@ void Game::init(const char* name, int x, int y, int width, int height) {
 	}
 }
 
+void Game::saveGame() {
+
+	p.write();
+
+	ofstream File("pipes.txt", std::ofstream::out | std::ofstream::trunc);
+	for (auto& pipe : pipes) {
+		File << pipe.first.getX() << ' ';
+		File << pipe.first.getY() << ' ';
+		File << pipe.first.getWidth() << ' ';
+		File << pipe.first.getHeight() << ' ';
+		File << pipe.first.getUp() << ' ';
+		File << pipe.first.getType() << endl;
+
+		File << pipe.second.getX() << ' ';
+		File << pipe.second.getY() << ' ';
+		File << pipe.second.getWidth() << ' ';
+		File << pipe.second.getHeight() << ' ';
+		File << pipe.second.getUp() << ' ';
+		File << pipe.second.getType() << endl;
+	}
+	File.close();
+
+
+	ofstream F("game.txt", std::ofstream::out | std::ofstream::trunc);
+
+	F << time1 << endl;
+	F << time2 << endl;
+	F << freq << endl;
+	F << freq2 << endl;
+	F << permission << endl;
+	F.close();
+
+}
+
+void Game::LoadGame() {
+
+	p.read();
+
+	ifstream F("game.txt");
+
+	if (F.is_open()) {
+		F >> time1;
+		F >> time2;
+		F >> freq;
+		F >> freq2;
+		F >> permission;
+
+		F.close();
+	}
+
+
+	ifstream File("pipes.txt");
+
+	if (File.is_open()) {
+
+		int x, y, w, h; bool poz, t;
+		while (File >> x >> y >> w >> h >> poz >> t) {
+
+			obstacle2 pipe;
+
+			pipe.setD(x, y, h, w);
+			pipe.setPoz(poz);
+			if (t)
+				pipe.setType();
+
+			obstacle2 pipe2;
+			File >> x >> y >> w >> h >> poz >> t;
+
+			pipe2.setD(x, y, h, w);
+			pipe2.setPoz(poz);
+			if (t)
+				pipe2.setType();
+
+			pipes.push_back({ pipe,pipe2 });
+
+		}
+
+		File.close();
+
+	}
+
+}
+
+void Game::NewGame() {
+
+	s.init();
+	p.setD(100, 200, 60, 70);
+	p.init();
+	pipes.clear();
+	time1 = 0;
+	time2 = 0;
+	freq = 1;
+	freq2 = 1;
+	permission = true;
+}
+
+
+
 void Game::generatePipes() {
 
-	time2 = SDL_GetTicks();
-	if (time2 - time1 > 2200) {
+	time2 = ++freq2;
+	if (time2 - time1 > 100) {
 
 		obstacle2 pipe;
 		pipe.setD(800, 0, 0, 80);
@@ -114,7 +169,8 @@ void Game::generatePipes() {
 		pipe2.setH2(pipe.getHeight());
 
 		pipes.push_back({ pipe,pipe2 });
-		time1 = SDL_GetTicks();
+		freq2++;
+		time1 = freq2;
 
 		freq++;
 	}
@@ -186,85 +242,85 @@ void Game::handleEvents() {
 	if (event.type == SDL_QUIT) {
 		isRunning = false;
 	}
+
+	if (event.type == SDL_MOUSEBUTTONDOWN) {
+		int mouseX, mouseY;
+		SDL_GetMouseState(&mouseX, &mouseY);
+
+		SDL_Rect startGameRect = { 300, 250, 150, 28 };
+		if (menu.isMouseInsideRect(mouseX, mouseY, startGameRect)) {
+			while (SDL_PollEvent(&event)) {
+				if (event.type == SDL_QUIT) {
+					isRunning = false;
+				}
+			}
+			cout << "NewGame" << endl;
+			newGame = true;
+			NewGame();
+			return;
+		}
+
+		SDL_Rect quitRect = { 295, 300, 160, 28 };
+		if (menu.isMouseInsideRect(mouseX, mouseY, quitRect)) {
+			loadGame = true;
+			LoadGame();
+		}
+	}
+
 	if (event.type == SDL_KEYDOWN)
 	{
+
 		if (event.key.keysym.sym == SDLK_UP)
 		{
+			cout << "keydown" << endl;
+			cout << (p.getDest())->y << endl;
 			p.Jump();
 		}
 
 		if (event.key.keysym.sym == SDLK_ESCAPE)
 		{
 
-			p.write();
+			loadGame = false;
+			newGame = false;
+
 			
-			ofstream File("pipes.txt", std::ofstream::out | std::ofstream::trunc);
-			for (auto& pipe : pipes) {
-				File << pipe.first.getX() << ' ';
-				File << pipe.first.getY() << ' ';
-				File << pipe.first.getWidth() << ' ';
-				File << pipe.first.getHeight() << ' ';
-				File << pipe.first.getUp() << ' ';
-				File << pipe.first.getType() << endl;
-
-				File << pipe.second.getX() << ' ';
-				File << pipe.second.getY() << ' ';
-				File << pipe.second.getWidth() << ' ';
-				File << pipe.second.getHeight() << ' ';
-				File << pipe.second.getUp() << ' ';
-				File << pipe.second.getType() << endl;
-			}
-			File.close();
-
-
-
-
-		/*	ofstream F("game.txt", std::ofstream::out | std::ofstream::trunc);
-
-			F << time1 << endl;
-			F << (time2 + 3000) << endl;
-			F << freq << endl;
-			F << permission << endl;
-
-			F.close();*/
-
-
-
-			isRunning = false;
-
 		}
 		
 	}
 	else {
-		p.Gravity();
+		if (loadGame || newGame)
+		p.Gravity();	
 	}
-
-
 
 }
 
 void Game::update() {
-	generatePipes();
-	movePipesX();
-	movePipesY();
-	checkCollision();
-	s.updateScore();
+
+	if (loadGame || newGame) {
+		generatePipes();
+		movePipesX();
+		movePipesY();
+		checkCollision();
+		s.updateScore();
+	}
 } 
 
 void Game::render() {
 
 	SDL_RenderClear(renderer);
-	b.render(renderer);
-	p.render(renderer);
 
-	SDL_Color textColor = { 255, 255, 255 };
+	if (loadGame || newGame) {
+		b.render(renderer);
+		p.render(renderer);
 
-	for (auto& pipe : pipes) {
-		pipe.first.render(renderer);
-		pipe.second.render(renderer);
-	}
+		for (auto& pipe : pipes) {
+			pipe.first.render(renderer);
+			pipe.second.render(renderer);
+		}
 
-	s.render(renderer);
+		s.render(renderer);
+	} else 
+	menu.render(renderer);
 
 	SDL_RenderPresent(renderer);
 }

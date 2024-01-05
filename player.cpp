@@ -3,9 +3,21 @@
 #include<iostream>
 using namespace std;
 
+
+void Player::init() {
+
+	Ypos = 256;
+	acc1 = 0;
+	acc2 = 0;
+	jump = false;
+	jHeight = -6;
+	lastJump = 0;
+}
+
+
+
 void Player::render(SDL_Renderer* r) {
 
-	SDL_Rect s = getSrc();
 	SDL_Rect *d = getDest();
 
 	SDL_RenderCopy(r, getTexture(), NULL, d);

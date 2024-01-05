@@ -1,5 +1,6 @@
 #include"object.h"
-
+#include<iostream>
+using namespace std;
 
 object::object() {
 	tex = NULL;
@@ -33,6 +34,7 @@ void object::setS(int x, int y, int h, int w) {
 
 void object::setD(int x, int y, int h, int w) {
 
+	cout << x << ' ' << y << endl;
 	dest.x = x;
 	dest.y = y;
 	dest.h = h;

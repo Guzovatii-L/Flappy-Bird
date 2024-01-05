@@ -13,6 +13,7 @@ private:
 	double lastJump = 0;
 	double jumpTimer;
 public:
+	void init();
 	void Gravity();
 	void GetJumpTime();
 	void Jump();

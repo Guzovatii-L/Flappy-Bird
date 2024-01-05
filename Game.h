@@ -9,6 +9,7 @@
 #include<string>
 #include"Score.h"
 #include <fstream>
+#include"Menu.h"
 using namespace std;
 
 class Game {
@@ -22,11 +23,14 @@ private:
 	background b;
 	vector<pair<obstacle2, obstacle2>>pipes;
 	Score s;
-	int time1;
-	int time2;
+	int time1 = 0;
+	int time2 = 0;
 	int freq = 1;
+	double freq2 = 1;
 	bool permission = true;
-
+	Menu menu;
+	bool newGame = false;
+	bool loadGame = false;
 public:
 
 	Game();
@@ -42,4 +46,7 @@ public:
 	void movePipesX();
 	void movePipesY();
 	bool checkCollision();
+	void LoadGame();
+	void NewGame();
+	void saveGame();
 };

@@ -4,6 +4,7 @@
 
 void Score::init() {
 
+	score = 0;
 	TTF_Init();
 	gFont = TTF_OpenFont("RubikScribble-Regular.ttf", 28);
 	if (gFont == NULL) {
@@ -48,5 +49,8 @@ void Score::render(SDL_Renderer* r) {
 
 void Score::updateScore() {
 
-	score = SDL_GetTicks() / 1000;
+	if (SDL_GetTicks() - scoreTimer > 1000) {
+		score++;
+		scoreTimer = SDL_GetTicks();
+	}
 }

@@ -10,7 +10,8 @@ class Score {
 private:
 
 	TTF_Font* gFont = NULL;
-	int score = 0;
+	int score;
+	int scoreTimer = 0;
 
 public:
 
