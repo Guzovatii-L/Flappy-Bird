@@ -260,8 +260,8 @@ void Game::handleEvents() {
 			return;
 		}
 
-		SDL_Rect quitRect = { 295, 300, 160, 28 };
-		if (menu.isMouseInsideRect(mouseX, mouseY, quitRect)) {
+		SDL_Rect loadRect = { 295, 300, 160, 28 };
+		if (menu.isMouseInsideRect(mouseX, mouseY, loadRect)) {
 			loadGame = true;
 			LoadGame();
 		}
@@ -272,8 +272,6 @@ void Game::handleEvents() {
 
 		if (event.key.keysym.sym == SDLK_UP)
 		{
-			cout << "keydown" << endl;
-			cout << (p.getDest())->y << endl;
 			p.Jump();
 		}
 

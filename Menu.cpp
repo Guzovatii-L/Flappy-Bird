@@ -1,9 +1,9 @@
 
 #include"Menu.h"
 
-void Menu::renderText(const char* text, int x, int y, SDL_Renderer *r) {
+void Menu::renderText(const char* text, int x, int y, SDL_Renderer *r, SDL_Color textColor) {
 
-    SDL_Color textColor = { 255, 255, 255 };
+
     SDL_Surface* surface = TTF_RenderText_Solid(gFont, text, textColor);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(r, surface);
 
@@ -27,16 +27,28 @@ void Menu::init() {
     }
 }
 
+bool Menu::isMouseInsideRect(int mouseX, int mouseY, const SDL_Rect& rect) {
+    return mouseX >= rect.x && mouseX <= rect.x + rect.w && mouseY >= rect.y && mouseY <= rect.y + rect.h;
+}
+
 void Menu::render(SDL_Renderer *r) {
 
     SDL_SetRenderDrawColor(r, 0, 0, 0, 255);
-    SDL_Rect obstacleRect;
-    obstacleRect = {0, 0, 800, 600};
-    SDL_RenderFillRect(r, &obstacleRect);
-    renderText("New Game", 300, 250, r);
-    renderText("Load Game", 295, 300, r);
-}
+    
+    SDL_Rect backgroundRect;
+    backgroundRect = {0, 0, 800, 600};
+    SDL_RenderFillRect(r, &backgroundRect);
 
-bool Menu::isMouseInsideRect(int mouseX, int mouseY, const SDL_Rect& rect) {
-    return mouseX >= rect.x && mouseX <= rect.x + rect.w && mouseY >= rect.y && mouseY <= rect.y + rect.h;
+    int mouseX, mouseY;
+    SDL_GetMouseState(&mouseX, &mouseY);
+    SDL_Rect startGameRect = { 300, 250, 150, 28 };
+    SDL_Rect loadRect = { 295, 300, 160, 28 };
+
+    if (isMouseInsideRect(mouseX, mouseY, startGameRect))
+        renderText("New Game", 300, 250, r, color2); else
+        renderText("New Game", 300, 250, r, color1);
+
+    if (isMouseInsideRect(mouseX, mouseY, loadRect))
+        renderText("Load Game", 295, 300, r, color2); else
+        renderText("Load Game", 295, 300, r, color1);
 }
