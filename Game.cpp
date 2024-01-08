@@ -1,19 +1,33 @@
-
-
 #include"Game.h"
 #include"Texture.h"
 #include<iostream>
 using namespace std;
 
-Game::Game() {
-
+Game::Game(int h, int w) {
+	height = h;
+	width = w;
 	isRunning = false;
 	window = NULL;
 	renderer = NULL;
-	p.setD(100, 200, 60, 70);
+	player.setD(100, 200, 60, 70);
+	time1 = 0;
+	time2 = 0;
+	freqMovingPipes = 1;
+	freqPipes = 1;
+	permission = true;
+	newGame = false;
+	loadGame = false;
 }
 
 Game::~Game() {
+	if (window != NULL) {
+		delete window;
+		window = nullptr;
+	}
+	if (renderer != NULL) {
+		delete renderer;
+		renderer = nullptr;
+	}
 }
 
 void Game::init(const char* name, int x, int y, int width, int height) {
@@ -27,17 +41,19 @@ void Game::init(const char* name, int x, int y, int width, int height) {
 
 			cout << "fereastra s-a creat!" << endl;
 		}
+		else {
+
+			isRunning = false;
+			return;
+		}
 
 		renderer = SDL_CreateRenderer(window, -1, 0);
 		if (renderer) {
 
 			isRunning = true;
 			cout << "render creat cu succes" << endl;
-			p.CreateTexture("textures/player.png", renderer);
-			b.CreateTexture("textures/background.bmp", renderer);
-
-			menu.init();
-			s.init();
+			player.CreateTexture("textures/player.png", renderer);
+			background.CreateTexture("textures/background.bmp", renderer);
 		}
 
 	}
@@ -50,8 +66,10 @@ void Game::init(const char* name, int x, int y, int width, int height) {
 
 void Game::saveGame() {
 
-	p.write();
+	//scriem datele pentru player in fisier
+	player.write();
 
+	//scriem datele pentru obstacole in fisier
 	ofstream File("pipes.txt", std::ofstream::out | std::ofstream::trunc);
 	for (auto& pipe : pipes) {
 		File << pipe.first.getX() << ' ';
@@ -71,95 +89,90 @@ void Game::saveGame() {
 	File.close();
 
 
+	//scriem datele pentru game in fisier
 	ofstream F("game.txt", std::ofstream::out | std::ofstream::trunc);
-
 	F << time1 << endl;
 	F << time2 << endl;
-	F << freq << endl;
-	F << freq2 << endl;
+	F << freqMovingPipes << endl;
+	F << freqPipes << endl;
 	F << permission << endl;
 	F.close();
-
 }
 
 void Game::LoadGame() {
 
-	p.read();
+	//citim datele pentru player din fisier
+	player.read();
 
+	//citim datele pentru game din fisier si initializam membrii privati
 	ifstream F("game.txt");
-
 	if (F.is_open()) {
 		F >> time1;
 		F >> time2;
-		F >> freq;
-		F >> freq2;
+		F >> freqMovingPipes;
+		F >> freqPipes;
 		F >> permission;
 
 		F.close();
 	}
 
-
+	//citim datele pentru obstacole si creeam vectorul cu obstacole
 	ifstream File("pipes.txt");
-
 	if (File.is_open()) {
 
-		int x, y, w, h; bool poz, t;
-		while (File >> x >> y >> w >> h >> poz >> t) {
+		int x, y, w, h; bool poz, type;
+		while (File >> x >> y >> w >> h >> poz >> type) {
 
-			obstacle2 pipe;
+			MovePipe pipe;
 
 			pipe.setD(x, y, h, w);
 			pipe.setPoz(poz);
-			if (t)
+			if (type)
 				pipe.setType();
 
-			obstacle2 pipe2;
-			File >> x >> y >> w >> h >> poz >> t;
+			MovePipe pipe2;
+			File >> x >> y >> w >> h >> poz >> type;
 
 			pipe2.setD(x, y, h, w);
 			pipe2.setPoz(poz);
-			if (t)
+			if (type)
 				pipe2.setType();
 
 			pipes.push_back({ pipe,pipe2 });
-
 		}
-
 		File.close();
-
 	}
-
 }
 
-void Game::NewGame() {
 
-	s.init();
-	p.setD(100, 200, 60, 70);
-	p.init();
+//functia care se apeleaza la click pe "New Game"
+void Game::NewGame() {
+	score.resetScore();
+	player.setD(100, 200, 60, 70);
+	player.init();
 	pipes.clear();
 	time1 = 0;
 	time2 = 0;
-	freq = 1;
-	freq2 = 1;
+	freqMovingPipes = 1;
+	freqPipes = 1;
 	permission = true;
 }
 
 
-
 void Game::generatePipes() {
 
-	time2 = ++freq2;
+	time2 = ++freqPipes;
 	if (time2 - time1 > 100) {
 
-		obstacle2 pipe;
+		MovePipe pipe;
 		pipe.setD(800, 0, 0, 80);
 		pipe.setPoz(1);
 
-		obstacle2 pipe2;
+		MovePipe pipe2;
 		pipe2.setD(800, 600, 0, 80);
 		pipe2.setPoz(0);
 
-		if (freq % 5 == 0) {
+		if (freqMovingPipes % 5 == 0) {
 
 			pipe.setType();
 			pipe2.setType();
@@ -169,31 +182,29 @@ void Game::generatePipes() {
 		pipe2.setH2(pipe.getHeight());
 
 		pipes.push_back({ pipe,pipe2 });
-		freq2++;
-		time1 = freq2;
+		freqPipes++;
+		time1 = freqPipes;
 
-		freq++;
+		freqMovingPipes++;
 	}
 }
 
-void Game::movePipesX()
-{
-	for (pair<obstacle2, obstacle2>& pipe : pipes){
+void Game::movePipesX(){
+	for (pair<MovePipe, MovePipe>& pipe : pipes){
 		pipe.first.moveX(); 
 		pipe.second.moveX();
 	}
 }
 
-void Game::movePipesY()
-{
-	for (pair<obstacle2, obstacle2>& pipe : pipes) {
+void Game::movePipesY(){
+	for (pair<MovePipe, MovePipe>& pipe : pipes) {
 		
 		if (pipe.first.getType()) {
 
 			if (pipe.first.getHeight() <= 0 && pipe.second.getHeight() <= 0)
 				permission = true;
 
-			if ((600 - (pipe.first.getHeight() + pipe.second.getHeight()) > 100) && permission) {
+			if ((height - (pipe.first.getHeight() + pipe.second.getHeight()) > 100) && permission) {
 
 				pipe.first.moveY(3);
 				pipe.second.moveY(3);
@@ -209,21 +220,21 @@ void Game::movePipesY()
 	}
 }
 
-bool Game::checkCollision()
-{
+bool Game::checkCollision(){
+
 	for (auto &pipe : pipes){
 				
-		SDL_Rect *r = p.getDest();
+		SDL_Rect *player_rect = player.getDest();
 
-		if ((r->x + r->w) >= pipe.first.getX() && r->x <= (pipe.first.getX() + pipe.first.getWidth())) {
-			if (r->y <= (pipe.first.getY() + pipe.first.getHeight())) {
-					isRunning = false;
-					break;
+		if ((player_rect->x + player_rect->w) >= pipe.first.getX() && player_rect->x <= (pipe.first.getX() + pipe.first.getWidth())) {
+			if (player_rect->y <= (pipe.first.getY() + pipe.first.getHeight())) {
+				isRunning = false;
+				break;
 			}
 		}
 
-		if ((r->x + r->w) >= pipe.second.getX() && r->x <= (pipe.second.getX() + pipe.second.getWidth())) {
-			if ((r->y + r->h) >= (pipe.second.getY() - pipe.second.getHeight())) {
+		if ((player_rect->x + player_rect->w) >= pipe.second.getX() && player_rect->x <= (pipe.second.getX() + pipe.second.getWidth())) {
+			if ((player_rect->y + player_rect->h) >= (pipe.second.getY() - pipe.second.getHeight())) {
 				isRunning = false;
 				break;
 			}
@@ -238,11 +249,12 @@ void Game::handleEvents() {
 
 	SDL_Event event;
 	SDL_PollEvent(&event);
-	p.GetJumpTime();
+	player.GetJumpTime();
 	if (event.type == SDL_QUIT) {
 		isRunning = false;
 	}
 
+	//daca s-a apasat butonul
 	if (event.type == SDL_MOUSEBUTTONDOWN) {
 		int mouseX, mouseY;
 		SDL_GetMouseState(&mouseX, &mouseY);
@@ -267,27 +279,25 @@ void Game::handleEvents() {
 		}
 	}
 
+	//daca s-a apasat vreo tasta
 	if (event.type == SDL_KEYDOWN)
 	{
 
 		if (event.key.keysym.sym == SDLK_UP)
 		{
-			p.Jump();
+			player.Jump();
 		}
 
-		if (event.key.keysym.sym == SDLK_ESCAPE)
-		{
-
+		//tasta escape - se deschide meniul
+		if (event.key.keysym.sym == SDLK_ESCAPE){
 			loadGame = false;
 			newGame = false;
-
-			
 		}
 		
 	}
 	else {
 		if (loadGame || newGame)
-		p.Gravity();	
+		player.Gravity();	
 	}
 
 }
@@ -299,7 +309,7 @@ void Game::update() {
 		movePipesX();
 		movePipesY();
 		checkCollision();
-		s.updateScore();
+		score.updateScore();
 	}
 } 
 
@@ -308,15 +318,15 @@ void Game::render() {
 	SDL_RenderClear(renderer);
 
 	if (loadGame || newGame) {
-		b.render(renderer);
-		p.render(renderer);
+		background.render(renderer);
+		player.render(renderer);
 
 		for (auto& pipe : pipes) {
 			pipe.first.render(renderer);
 			pipe.second.render(renderer);
 		}
+		score.render(renderer);
 
-		s.render(renderer);
 	} else 
 	menu.render(renderer);
 

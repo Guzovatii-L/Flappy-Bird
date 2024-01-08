@@ -1,16 +1,11 @@
 #pragma once
-
 #include"object.h"
 #include <cstdlib>
 
-class obstacle : public object{
-
+class Pipe : public Object{
 private:
-
 	bool up;
-
 public:
-
 	void moveX();
 	void setH();
 	void setPoz(bool up);

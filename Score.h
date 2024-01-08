@@ -1,23 +1,19 @@
 #pragma once
 
-#include <SDL_ttf.h>
-#include<iostream>
+
+#include"Font.h"
 #include<string>
 using namespace std;
 
-class Score {
-
+class Score : public Font{
 private:
-
-	TTF_Font* gFont = NULL;
 	int score;
-	int scoreTimer = 0;
-
+	int scoreTimer;
 public:
-
+	Score();
+	~Score();
 	SDL_Texture* renderText(SDL_Renderer* r);
 	void render(SDL_Renderer *r);
 	void updateScore();
-	void init();
-
+	void resetScore();
 };

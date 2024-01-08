@@ -1,9 +1,10 @@
-
 #include"background.h"
 
-void background :: render(SDL_Renderer* r) {
+Background::Background() {
+	setD(-5, 0, 620, 820);
+}
 
-	//SDL_Rect s = getSrc();
-	//SDL_Rect d = getDest();
-	SDL_RenderCopy(r, getTexture(), NULL, NULL);
+void Background :: render(SDL_Renderer* r) {
+	SDL_Rect *d = getDest();
+	SDL_RenderCopy(r, getTexture(), NULL, d);
 }

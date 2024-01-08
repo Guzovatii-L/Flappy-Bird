@@ -1,10 +1,12 @@
-
 #include"Menu.h"
 
+Menu::Menu() : Font() {
+    color1 = { 250, 250, 250 };
+    color2 = { 0, 250, 0 };
+}
+
 void Menu::renderText(const char* text, int x, int y, SDL_Renderer *r, SDL_Color textColor) {
-
-
-    SDL_Surface* surface = TTF_RenderText_Solid(gFont, text, textColor);
+    SDL_Surface* surface = TTF_RenderText_Solid(getFont(), text, textColor);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(r, surface);
 
     int width = 50, height = 50;
@@ -15,16 +17,6 @@ void Menu::renderText(const char* text, int x, int y, SDL_Renderer *r, SDL_Color
 
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
-
-}
-
-void Menu::init() {
-
-    TTF_Init();
-    gFont = TTF_OpenFont("RubikScribble-Regular.ttf", 28);
-    if (gFont == NULL) {
-        printf("Error loading font: %s\n", TTF_GetError());
-    }
 }
 
 bool Menu::isMouseInsideRect(int mouseX, int mouseY, const SDL_Rect& rect) {

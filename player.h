@@ -1,18 +1,19 @@
 #pragma once
 #include"object.h"
 
-class Player : public object {
-
+class Player : public Object {
 private:
-	double Ypos = 256;
-	double gravity = 0.2;
-	double acc1 = 0;
-	double acc2 = 0;
-	bool jump = false;
-	double jHeight = -6;
-	double lastJump = 0;
+	double Ypos;
+	double gravity;
+	double acc1;
+	double acc2;
+	bool jump;
+	double jHeight;
+	double lastJump;
 	double jumpTimer;
 public:
+	Player();
+	~Player();
 	void init();
 	void Gravity();
 	void GetJumpTime();
@@ -21,5 +22,4 @@ public:
 	void render(SDL_Renderer* r);
 	void write();
 	void read();
-
 };

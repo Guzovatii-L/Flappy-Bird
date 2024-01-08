@@ -1,20 +1,15 @@
-
 #include "pipes_move.h"
-#include"Game.h"
 
-void obstacle2::moveY(int add) {
-
+void MovePipe::moveY(int add) {
 	SDL_Rect* r = getDest();
 	r->h += add;
 }
 
-void obstacle2::setType() {
-
-	type = true;
+void MovePipe::setType() {
+	moveType = true;
 }
 
-bool obstacle2::getType() {
-
-	return type;
+bool MovePipe::getType() {
+	return moveType;
 }
 

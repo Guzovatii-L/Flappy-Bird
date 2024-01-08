@@ -13,27 +13,27 @@
 using namespace std;
 
 class Game {
-
 private:
-
+	int height;
+	int width;
 	bool isRunning;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
-	Player p;
-	background b;
-	vector<pair<obstacle2, obstacle2>>pipes;
-	Score s;
+	Player player;
+	Background background;
+	vector<pair<MovePipe, MovePipe>>pipes;
+	Score score;
 	int time1 = 0;
 	int time2 = 0;
-	int freq = 1;
-	double freq2 = 1;
+	int freqMovingPipes = 1;
+	int freqPipes = 1;
 	bool permission = true;
 	Menu menu;
 	bool newGame = false;
 	bool loadGame = false;
 public:
 
-	Game();
+	Game(int, int);
 	~Game();
 
 	void init(const char *name, int x, int y, int width, int height);
@@ -49,4 +49,5 @@ public:
 	void LoadGame();
 	void NewGame();
 	void saveGame();
+
 };

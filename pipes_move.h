@@ -1,15 +1,11 @@
 #pragma once
-
 #include"pipes.h"
 using namespace std;
 
-class obstacle2 : public obstacle {
-
+class MovePipe : public Pipe {
 private:
-
-	bool type = false;
+	bool moveType = false;
 public:
-
 	void moveY(int add);
 	void setType();
 	bool getType();

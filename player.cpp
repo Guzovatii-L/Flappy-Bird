@@ -1,11 +1,21 @@
-
 #include"player.h"
-#include<iostream>
-using namespace std;
 
+Player::Player() {
+	Ypos = 256;
+	gravity = 0.2;
+	acc1 = 0;
+	acc2 = 0;
+	jump = false;
+	jHeight = -6;
+	lastJump = 0;
+	jumpTimer = 0;
+}
 
+Player::~Player() {
+}
+
+//functie pentru new game
 void Player::init() {
-
 	Ypos = 256;
 	acc1 = 0;
 	acc2 = 0;
@@ -14,19 +24,14 @@ void Player::init() {
 	lastJump = 0;
 }
 
-
-
 void Player::render(SDL_Renderer* r) {
-
 	SDL_Rect *d = getDest();
-
 	SDL_RenderCopy(r, getTexture(), NULL, d);
 }
 
 void Player::Gravity() {
 
-	if (jumpState())
-	{
+	if (jumpState()){
 		acc1 = acc1 + 0.025;
 		acc2 = acc2 + 0.025;
 		jHeight = jHeight + gravity;
@@ -38,9 +43,7 @@ void Player::Gravity() {
 			jHeight = -6;
 		}
 	}
-	else
-	{
-
+	else{
 		acc1 = acc1 + 0.035;
 		acc2 = acc2 + 0.035;
 		Ypos = Ypos + gravity + acc1 + acc2;
@@ -49,9 +52,7 @@ void Player::Gravity() {
 }
 
 void Player::GetJumpTime() {
-
 	jumpTimer = SDL_GetTicks();
-
 }
 
 void Player::Jump() {
@@ -62,30 +63,25 @@ void Player::Jump() {
 	jHeight = -6;
 }
 
-
 bool Player::jumpState() {
-
 	return jump;
 }
 
 void Player::write() {
+	ofstream File("player.txt", std::ofstream::out | std::ofstream::trunc);
 
-	ofstream MyFile("player.txt", std::ofstream::out | std::ofstream::trunc);
+	File << Ypos << endl;
+	File << acc1 << endl;
+	File << acc2 << endl;
+	File << jump << endl;
+	File << jHeight << endl;
+	File << lastJump << endl;
+	File << jumpTimer << endl;
 
-	MyFile << Ypos << endl;
-	MyFile << acc1 << endl;
-	MyFile << acc2 << endl;
-	MyFile << jump << endl;
-	MyFile << jHeight << endl;
-	MyFile << lastJump << endl;
-	MyFile << jumpTimer << endl;
-
-	MyFile.close();
-
+	File.close();
 }
 
 void Player::read() {
-
 	ifstream File("player.txt");
 
 	if (File.is_open()) {
@@ -100,5 +96,3 @@ void Player::read() {
 		File.close();
 	}
 }
-
-

@@ -1,4 +1,3 @@
-
 #include"Texture.h"
 
 SDL_Texture* Texture::LoadTexture(const char* file, SDL_Renderer* r) {

@@ -1,10 +1,7 @@
-
 #include <SDL.h>
 #include <stdio.h>
 #include <iostream>
 #include "Game.h"
-
-
 
 int main(int argc, char* args[]) {
 
@@ -14,7 +11,7 @@ int main(int argc, char* args[]) {
 	Uint32 frameStart;
 	int frameTime;
 
-	Game* game = new Game;
+	Game* game = new Game(600, 800);
 
 	game->init("joc", 200, 200, 800, 600);
 
