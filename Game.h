@@ -23,14 +23,14 @@ private:
 	Background background;
 	vector<pair<MovePipe, MovePipe>>pipes;
 	Score score;
-	int time1 = 0;
-	int time2 = 0;
-	int freqMovingPipes = 1;
-	int freqPipes = 1;
-	bool permission = true;
+	int time1;
+	int time2;
+	int freqMovingPipes;
+	int freqPipes;
+	bool permission;
 	Menu menu;
-	bool newGame = false;
-	bool loadGame = false;
+	bool game;
+	int speed;
 public:
 
 	Game(int, int);
@@ -46,8 +46,8 @@ public:
 	void movePipesX();
 	void movePipesY();
 	bool checkCollision();
-	void LoadGame();
-	void NewGame();
+	void loadGame();
+	void newGame();
 	void saveGame();
-
+	void nextLevel();
 };

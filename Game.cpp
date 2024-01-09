@@ -15,8 +15,8 @@ Game::Game(int h, int w) {
 	freqMovingPipes = 1;
 	freqPipes = 1;
 	permission = true;
-	newGame = false;
-	loadGame = false;
+	game = false;
+	speed = 2;
 }
 
 Game::~Game() {
@@ -97,12 +97,16 @@ void Game::saveGame() {
 	F << freqPipes << endl;
 	F << permission << endl;
 	F.close();
+
+	score.write();
 }
 
-void Game::LoadGame() {
+void Game::loadGame() {
 
 	//citim datele pentru player din fisier
 	player.read();
+	
+	score.read();
 
 	//citim datele pentru game din fisier si initializam membrii privati
 	ifstream F("game.txt");
@@ -117,6 +121,7 @@ void Game::LoadGame() {
 	}
 
 	//citim datele pentru obstacole si creeam vectorul cu obstacole
+	pipes.clear();
 	ifstream File("pipes.txt");
 	if (File.is_open()) {
 
@@ -126,7 +131,9 @@ void Game::LoadGame() {
 			MovePipe pipe;
 
 			pipe.setD(x, y, h, w);
+			//up/down
 			pipe.setPoz(poz);
+			//movePipe?
 			if (type)
 				pipe.setType();
 
@@ -146,7 +153,7 @@ void Game::LoadGame() {
 
 
 //functia care se apeleaza la click pe "New Game"
-void Game::NewGame() {
+void Game::newGame() {
 	score.resetScore();
 	player.setD(100, 200, 60, 70);
 	player.init();
@@ -176,6 +183,7 @@ void Game::generatePipes() {
 
 			pipe.setType();
 			pipe2.setType();
+			freqMovingPipes++;
 		}
 
 		pipe.setH();
@@ -191,8 +199,8 @@ void Game::generatePipes() {
 
 void Game::movePipesX(){
 	for (pair<MovePipe, MovePipe>& pipe : pipes){
-		pipe.first.moveX(); 
-		pipe.second.moveX();
+		pipe.first.moveX(speed); 
+		pipe.second.moveX(speed);
 	}
 }
 
@@ -267,15 +275,15 @@ void Game::handleEvents() {
 				}
 			}
 			cout << "NewGame" << endl;
-			newGame = true;
-			NewGame();
+			game = true;
+			newGame();
 			return;
 		}
 
 		SDL_Rect loadRect = { 295, 300, 160, 28 };
 		if (menu.isMouseInsideRect(mouseX, mouseY, loadRect)) {
-			loadGame = true;
-			LoadGame();
+			game = true;
+			loadGame();
 		}
 	}
 
@@ -290,21 +298,33 @@ void Game::handleEvents() {
 
 		//tasta escape - se deschide meniul
 		if (event.key.keysym.sym == SDLK_ESCAPE){
-			loadGame = false;
-			newGame = false;
+			game = false;
+		}
+
+		//tasta 's' - save Game
+		if (event.key.keysym.sym == SDLK_s) {
+			saveGame();
 		}
 		
 	}
 	else {
-		if (loadGame || newGame)
+		if (game)
 		player.Gravity();	
 	}
 
 }
 
-void Game::update() {
+void Game::nextLevel() {
+	if (freqMovingPipes > 50 && freqMovingPipes < 100) {
+		speed = 3;
+	} else if (freqMovingPipes > 100) {
+		speed = 4;
+	}
+}
 
-	if (loadGame || newGame) {
+void Game::update() {
+	if (game) {
+		nextLevel();
 		generatePipes();
 		movePipesX();
 		movePipesY();
@@ -317,7 +337,7 @@ void Game::render() {
 
 	SDL_RenderClear(renderer);
 
-	if (loadGame || newGame) {
+	if (game) {
 		background.render(renderer);
 		player.render(renderer);
 

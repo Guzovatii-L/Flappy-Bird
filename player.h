@@ -1,5 +1,7 @@
 #pragma once
 #include"object.h"
+#include<fstream>
+using namespace std;
 
 class Player : public Object {
 private:

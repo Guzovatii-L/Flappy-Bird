@@ -3,9 +3,9 @@
 using namespace std;
 
 
-void Pipe::moveX() {
+void Pipe::moveX(int speed) {
 	SDL_Rect *r = getDest();
-	r->x -= 2;
+	r->x -= speed;
 }
 
 void Pipe::setPoz(bool t) {

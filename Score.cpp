@@ -12,6 +12,20 @@ void Score::resetScore() {
 	score = 0;
 }
 
+void Score::write() {
+	ofstream File("score.txt", std::ofstream::out | std::ofstream::trunc);
+	File << score << endl;
+	File.close();
+}
+
+void Score::read() {
+	ifstream File("score.txt");
+	if (File.is_open()) {
+		File >> score;
+		File.close();
+	}
+}
+
 SDL_Texture* Score::renderText(SDL_Renderer *r) {
 	SDL_Color textColor = { 255, 255, 255 };
 	string scoreText = to_string(score);

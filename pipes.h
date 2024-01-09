@@ -6,7 +6,7 @@ class Pipe : public Object{
 private:
 	bool up;
 public:
-	void moveX();
+	void moveX(int);
 	void setH();
 	void setPoz(bool up);
 	int getX();
