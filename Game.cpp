@@ -20,47 +20,68 @@ Game::Game(int h, int w) {
 }
 
 Game::~Game() {
-	if (window != NULL) {
-		delete window;
-		window = nullptr;
-	}
-	if (renderer != NULL) {
-		delete renderer;
-		renderer = nullptr;
-	}
+	if (renderer != NULL)
+	SDL_DestroyRenderer(renderer);
+	if (window != NULL)
+	SDL_DestroyWindow(window);
+	TTF_Quit();
+	SDL_Quit();
 }
 
 void Game::init(const char* name, int x, int y, int width, int height) {
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
+	try {
+
+		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+			throw runtime_error(SDL_GetError());
 
 		cout << "initializare cu succes" << endl;
 
-		window = SDL_CreateWindow(name, x, y, width, height, 0);
-		if (window) {
+		try {
+			window = SDL_CreateWindow(name, x, y, width, height, 0);
 
+			if (window == NULL) {
+				throw runtime_error("window is NULL");
+			}
 			cout << "fereastra s-a creat!" << endl;
-		}
-		else {
-
+		} catch (runtime_error& e) {
+			std::cerr << "Error: " << e.what() << std::endl;
 			isRunning = false;
 			return;
 		}
 
-		renderer = SDL_CreateRenderer(window, -1, 0);
-		if (renderer) {
+		try {
+			renderer = SDL_CreateRenderer(window, -1, 0);
+
+			if (renderer == NULL) {
+				throw runtime_error("renderer is NULL");
+			}
 
 			isRunning = true;
 			cout << "render creat cu succes" << endl;
-			player.CreateTexture("textures/player.png", renderer);
-			background.CreateTexture("textures/background.bmp", renderer);
+
+			try {
+				player.CreateTexture("textures/player.png", renderer);
+				background.CreateTexture("textures/background.bmp", renderer);
+
+
+				if (player.getTexture() == NULL) {
+					throw runtime_error("player must have a texture");
+				}
+
+				if (background.getTexture() == NULL) {
+					throw runtime_error("background must have a texture");
+				}
+
+			} catch (runtime_error& e) {
+				std::cerr << "Error: " << e.what() << std::endl;
+			}
+
+		} catch (runtime_error& e) {
+			std::cerr << "Error: " << e.what() << std::endl;
 		}
-
-	}
-	else {
-
-		cout << "initializarea nu s-a putut efectua" << endl;
-		isRunning = false;
+	} catch (runtime_error& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
 	}
 }
 
@@ -351,16 +372,6 @@ void Game::render() {
 	menu.render(renderer);
 
 	SDL_RenderPresent(renderer);
-}
-
-void Game::clean() {
-
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	TTF_Quit();
-	SDL_Quit();
-
-	cout << "jocul s-a sters" << endl;
 }
 
 bool Game::running() {

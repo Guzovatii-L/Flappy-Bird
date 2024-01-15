@@ -15,6 +15,6 @@ Font::~Font() {
     }
 }
 
-TTF_Font* Font::getFont() {
+TTF_Font* Font::getFont() { 
     return gFont;
 }

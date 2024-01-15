@@ -10,6 +10,7 @@
 #include"Score.h"
 #include <fstream>
 #include"Menu.h"
+#include <stdexcept>
 using namespace std;
 
 class Game {
@@ -40,7 +41,6 @@ public:
 	void handleEvents();
 	void update();
 	void render();
-	void clean();
 	void generatePipes();
 	bool running();
 	void movePipesX();

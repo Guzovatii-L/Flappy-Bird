@@ -30,21 +30,22 @@ SDL_Texture* Score::renderText(SDL_Renderer *r) {
 	SDL_Color textColor = { 255, 255, 255 };
 	string scoreText = to_string(score);
 
-	SDL_Surface* textSurface = TTF_RenderText_Solid(getFont(), scoreText.c_str(), textColor);
-	if (textSurface == NULL) {
-		cout << "textS is null" << endl;
-		return NULL;
-	}
+	try {
+		SDL_Surface*  textSurface = TTF_RenderText_Solid(getFont(), scoreText.c_str(), textColor);
+		if (textSurface == NULL) {
+			throw runtime_error("textS is null");
+		} 
 
-	SDL_Texture* textTexture = SDL_CreateTextureFromSurface(r, textSurface);
-	if (textTexture == NULL) {
-		cout << "texture is 0" << endl;
+		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(r, textSurface);
+		if (textTexture == NULL) {
+			throw runtime_error("texture is 0");
+		}
 		SDL_FreeSurface(textSurface);
-		return NULL;
-	}
+		return textTexture;
 
-	SDL_FreeSurface(textSurface);
-	return textTexture;
+	} catch (runtime_error& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+	}
 }
 
 void Score::render(SDL_Renderer* r) {
