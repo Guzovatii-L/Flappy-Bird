@@ -139,7 +139,7 @@ void Game::saveGame() {
 }
 
 void Game::loadGame() {
-
+    
 	try {
 		//citim datele pentru player din fisier
 		player.read();

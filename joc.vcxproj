@@ -101,8 +101,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Luminita\json\jsoncpp\include\json;C:\Users\Luminita\SDL_tff\include;C:\Dev\SDL2_image-2.0.1\include;C:\SDL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Luminita\json\jsoncpp\build\lib;C:\Users\Luminita\SDL_tff\lib\x64;C:\Dev\SDL2_image-2.0.1\lib\x64;C:\SDL\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>libs\SDL\include;SDL_TFF\include;SDL2_IMAGE\include;$(IncludePath)</IncludePath>
+    <LibraryPath>SDL_TFF\lib\x64;SDL2_IMAGE\lib\x64;SDL\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -138,13 +138,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Luminita\json\jsoncpp\include\json;C:\Users\Luminita\SDL_tff\include;C:\SDL\include;C:\Dev\SDL2_image-2.0.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>libs\SDL_TFF\include;libs\SDL\include;libs\SDL2_IMAGE\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\Luminita\SDL_tff\lib\x64;C:\SDL\lib\x64;C:\Dev\SDL2_image-2.0.1\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs\SDL_TFF\lib\x64;libs\SDL\lib\x64;libs\SDL2_IMAGE\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
