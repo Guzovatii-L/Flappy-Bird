@@ -14,6 +14,10 @@ void Score::resetScore() {
 
 void Score::write() {
 	ofstream File("score.txt", std::ofstream::out | std::ofstream::trunc);
+	if (!File.is_open()) {
+		throw runtime_error("score file do not open for write");
+	}
+
 	File << score << endl;
 	File.close();
 }
@@ -24,28 +28,27 @@ void Score::read() {
 		File >> score;
 		File.close();
 	}
+	else {
+		throw runtime_error("score file do not open for read");
+	}
 }
 
 SDL_Texture* Score::renderText(SDL_Renderer *r) {
 	SDL_Color textColor = { 255, 255, 255 };
 	string scoreText = to_string(score);
 
-	try {
-		SDL_Surface*  textSurface = TTF_RenderText_Solid(getFont(), scoreText.c_str(), textColor);
-		if (textSurface == NULL) {
-			throw runtime_error("textS is null");
-		} 
+	SDL_Surface*  textSurface = TTF_RenderText_Solid(getFont(), scoreText.c_str(), textColor);
+	if (textSurface == NULL) {
+		cout << SDL_GetError() << endl;
+	} 
 
-		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(r, textSurface);
-		if (textTexture == NULL) {
-			throw runtime_error("texture is 0");
-		}
-		SDL_FreeSurface(textSurface);
-		return textTexture;
-
-	} catch (runtime_error& e) {
-		std::cerr << "Error: " << e.what() << std::endl;
+	SDL_Texture* textTexture = SDL_CreateTextureFromSurface(r, textSurface);
+	if (textTexture == NULL) {
+		cout << SDL_GetError() << endl;
 	}
+
+	SDL_FreeSurface(textSurface);
+	return textTexture;
 }
 
 void Score::render(SDL_Renderer* r) {

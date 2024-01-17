@@ -1,6 +1,9 @@
 #pragma once
 #include<SDL.h>
 #include<SDL_image.h>
+#include <stdexcept>
+#include<iostream>
+using namespace std;
 
 class Texture {
 

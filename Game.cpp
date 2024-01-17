@@ -21,74 +21,66 @@ Game::Game(int h, int w) {
 
 Game::~Game() {
 	if (renderer != NULL)
-	SDL_DestroyRenderer(renderer);
+		SDL_DestroyRenderer(renderer);
 	if (window != NULL)
-	SDL_DestroyWindow(window);
+		SDL_DestroyWindow(window);
 	TTF_Quit();
 	SDL_Quit();
 }
 
 void Game::init(const char* name, int x, int y, int width, int height) {
 
-	try {
 
-		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-			throw runtime_error(SDL_GetError());
+	if (SDL_Init(SDL_INIT_EVERYTHING) == 0){
 
 		cout << "initializare cu succes" << endl;
 
-		try {
-			window = SDL_CreateWindow(name, x, y, width, height, 0);
+		window = SDL_CreateWindow(name, x, y, width, height, 0);
+		if (window == NULL) {
+			cout << SDL_GetError() << endl;
+			return;
+		}
+		cout << "fereastra s-a creat!" << endl;
 
-			if (window == NULL) {
-				throw runtime_error("window is NULL");
-			}
-			cout << "fereastra s-a creat!" << endl;
-		} catch (runtime_error& e) {
-			std::cerr << "Error: " << e.what() << std::endl;
-			isRunning = false;
+		renderer = SDL_CreateRenderer(window, -1, 0);
+		if (renderer == NULL) {
+			cout << SDL_GetError() << endl;
+			return;
+		}
+		cout << "render creat cu succes" << endl;
+
+		player.CreateTexture("textures/player.png", renderer);
+		background.CreateTexture("textures/background.bmp", renderer);
+
+		if (player.getTexture() == NULL) {
+			cout << "player NULL" << endl;
 			return;
 		}
 
-		try {
-			renderer = SDL_CreateRenderer(window, -1, 0);
-
-			if (renderer == NULL) {
-				throw runtime_error("renderer is NULL");
-			}
-
-			isRunning = true;
-			cout << "render creat cu succes" << endl;
-
-			try {
-				player.CreateTexture("textures/player.png", renderer);
-				background.CreateTexture("textures/background.bmp", renderer);
-
-
-				if (player.getTexture() == NULL) {
-					throw runtime_error("player must have a texture");
-				}
-
-				if (background.getTexture() == NULL) {
-					throw runtime_error("background must have a texture");
-				}
-
-			} catch (runtime_error& e) {
-				std::cerr << "Error: " << e.what() << std::endl;
-			}
-
-		} catch (runtime_error& e) {
-			std::cerr << "Error: " << e.what() << std::endl;
+		if (background.getTexture() == NULL) {
+			cout << "background NULL" << endl;
+			return;
 		}
-	} catch (runtime_error& e) {
-		std::cerr << "Error: " << e.what() << std::endl;
+
+		isRunning = true;
+	}
+	else {
+		cout << SDL_GetError() << endl;
+		isRunning = false;
 	}
 }
 
 void Game::saveGame() {
 
-	//scriem datele pentru player in fisier
-	player.write();
+	try {
+		//scriem datele pentru player in fisier
+		player.write();
+
+	} catch (runtime_error& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		isRunning = false;
+		return;
+	}
 
 	//scriem datele pentru obstacole in fisier
 	ofstream File("pipes.txt", std::ofstream::out | std::ofstream::trunc);
@@ -119,15 +111,33 @@ void Game::saveGame() {
 	F << permission << endl;
 	F.close();
 
-	score.write();
+	try {
+		score.write();
+	} catch (runtime_error& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		isRunning = false;
+		return;
+	}
 }
 
 void Game::loadGame() {
 
-	//citim datele pentru player din fisier
-	player.read();
+	try {
+		//citim datele pentru player din fisier
+		player.read();
+	} catch (runtime_error& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		isRunning = false;
+		return;
+	}
 	
-	score.read();
+	try {
+		score.read();
+	} catch (runtime_error& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		isRunning = false;
+		return;
+	}
 
 	//citim datele pentru game din fisier si initializam membrii privati
 	ifstream F("game.txt");
@@ -318,8 +328,11 @@ void Game::handleEvents() {
 		}
 
 		//tasta escape - se deschide meniul
-		if (event.key.keysym.sym == SDLK_ESCAPE){
+		if (event.key.keysym.sym == SDLK_ESCAPE && game == true){
 			game = false;
+		} else 
+		if (event.key.keysym.sym == SDLK_ESCAPE && game == false) {
+				game = true;
 		}
 
 		//tasta 's' - save Game

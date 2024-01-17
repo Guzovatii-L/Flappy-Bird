@@ -7,7 +7,15 @@ Menu::Menu() : Font() {
 
 void Menu::renderText(const char* text, int x, int y, SDL_Renderer *r, SDL_Color textColor) {
     SDL_Surface* surface = TTF_RenderText_Solid(getFont(), text, textColor);
+    if (surface == NULL) {
+        cout << SDL_GetError() << endl;
+        return;
+    }
     SDL_Texture* texture = SDL_CreateTextureFromSurface(r, surface);
+    if (texture == NULL) {
+        cout << SDL_GetError() << endl;
+        return;
+    }
 
     int width = 50, height = 50;
     SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);

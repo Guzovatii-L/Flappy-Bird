@@ -70,6 +70,9 @@ bool Player::jumpState() {
 void Player::write() {
 	ofstream File("player.txt", std::ofstream::out | std::ofstream::trunc);
 
+	if (!File.is_open())
+		throw runtime_error("player file do not open for write");
+
 	File << Ypos << endl;
 	File << acc1 << endl;
 	File << acc2 << endl;
@@ -84,21 +87,19 @@ void Player::write() {
 void Player::read() {
 	ifstream File("player.txt");
 
-	try {
-		if (File.is_open()) {
-			File >> Ypos;
-			File >> acc1;
-			File >> acc2;
-			File >> jump;
-			File >> jHeight;
-			File >> lastJump;
-			File >> jumpTimer;
+	if (File.is_open()) {
+		File >> Ypos;
+		File >> acc1;
+		File >> acc2;
+		File >> jump;
+		File >> jHeight;
+		File >> lastJump;
+		File >> jumpTimer;
 
-			File.close();
-		}
-		else throw runtime_error("player file do not open");
+		File.close();
 	}
-	catch (runtime_error& e) {
-		std::cerr << "Error: " << e.what() << std::endl;
+	else {
+		throw runtime_error("player file do not open for read");
 	}
+
 }
