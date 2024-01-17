@@ -30,24 +30,23 @@ Game::~Game() {
 
 void Game::init(const char* name, int x, int y, int width, int height) {
 
-
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0){
 
-		cout << "initializare cu succes" << endl;
+		cout << "initialization success" << endl;
 
 		window = SDL_CreateWindow(name, x, y, width, height, 0);
 		if (window == NULL) {
 			cout << SDL_GetError() << endl;
 			return;
 		}
-		cout << "fereastra s-a creat!" << endl;
+		cout << "the window has been created!" << endl;
 
 		renderer = SDL_CreateRenderer(window, -1, 0);
 		if (renderer == NULL) {
 			cout << SDL_GetError() << endl;
 			return;
 		}
-		cout << "render creat cu succes" << endl;
+		cout << "render created successfully" << endl;
 
 		player.CreateTexture("textures/player.png", renderer);
 		background.CreateTexture("textures/background.bmp", renderer);
@@ -82,34 +81,53 @@ void Game::saveGame() {
 		return;
 	}
 
-	//scriem datele pentru obstacole in fisier
-	ofstream File("pipes.txt", std::ofstream::out | std::ofstream::trunc);
-	for (auto& pipe : pipes) {
-		File << pipe.first.getX() << ' ';
-		File << pipe.first.getY() << ' ';
-		File << pipe.first.getWidth() << ' ';
-		File << pipe.first.getHeight() << ' ';
-		File << pipe.first.getUp() << ' ';
-		File << pipe.first.getType() << endl;
+	try {
+		//scriem datele pentru obstacole in fisier
+		ofstream File("pipes.txt", std::ofstream::out | std::ofstream::trunc);
 
-		File << pipe.second.getX() << ' ';
-		File << pipe.second.getY() << ' ';
-		File << pipe.second.getWidth() << ' ';
-		File << pipe.second.getHeight() << ' ';
-		File << pipe.second.getUp() << ' ';
-		File << pipe.second.getType() << endl;
+		if (!File.is_open())
+			throw runtime_error("pipes file do not open for write");
+
+		for (auto& pipe : pipes) {
+			File << pipe.first.getX() << ' ';
+			File << pipe.first.getY() << ' ';
+			File << pipe.first.getWidth() << ' ';
+			File << pipe.first.getHeight() << ' ';
+			File << pipe.first.getUp() << ' ';
+			File << pipe.first.getType() << endl;
+
+			File << pipe.second.getX() << ' ';
+			File << pipe.second.getY() << ' ';
+			File << pipe.second.getWidth() << ' ';
+			File << pipe.second.getHeight() << ' ';
+			File << pipe.second.getUp() << ' ';
+			File << pipe.second.getType() << endl;
+		}
+		File.close();
+	} catch (runtime_error& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		isRunning = false;
+		return;
 	}
-	File.close();
+	
+	try {
+		//scriem datele pentru game in fisier
+		ofstream F("game.txt", std::ofstream::out | std::ofstream::trunc);
 
+		if (!F.is_open())
+			throw runtime_error("game file do not open for write");
 
-	//scriem datele pentru game in fisier
-	ofstream F("game.txt", std::ofstream::out | std::ofstream::trunc);
-	F << time1 << endl;
-	F << time2 << endl;
-	F << freqMovingPipes << endl;
-	F << freqPipes << endl;
-	F << permission << endl;
-	F.close();
+		F << time1 << endl;
+		F << time2 << endl;
+		F << freqMovingPipes << endl;
+		F << freqPipes << endl;
+		F << permission << endl;
+		F.close();
+	} catch (runtime_error& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		isRunning = false;
+		return;
+	}
 
 	try {
 		score.write();
@@ -139,46 +157,67 @@ void Game::loadGame() {
 		return;
 	}
 
-	//citim datele pentru game din fisier si initializam membrii privati
-	ifstream F("game.txt");
-	if (F.is_open()) {
-		F >> time1;
-		F >> time2;
-		F >> freqMovingPipes;
-		F >> freqPipes;
-		F >> permission;
+	try {
+		//citim datele pentru game din fisier si initializam membrii privati
+		ifstream F("game.txt");
 
-		F.close();
+		if (!F.is_open())
+			throw runtime_error("game file do not open for read");
+
+		if (F.is_open()) {
+			F >> time1;
+			F >> time2;
+			F >> freqMovingPipes;
+			F >> freqPipes;
+			F >> permission;
+
+			F.close();
+		}
+	} catch (runtime_error& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		isRunning = false;
+		return;
 	}
 
 	//citim datele pentru obstacole si creeam vectorul cu obstacole
 	pipes.clear();
-	ifstream File("pipes.txt");
-	if (File.is_open()) {
 
-		int x, y, w, h; bool poz, type;
-		while (File >> x >> y >> w >> h >> poz >> type) {
+	try {
+		ifstream File("pipes.txt");
 
-			MovePipe pipe;
+		if (!File.is_open())
+			throw runtime_error("game file do not open for read");
 
-			pipe.setD(x, y, h, w);
-			//up/down
-			pipe.setPoz(poz);
-			//movePipe?
-			if (type)
-				pipe.setType();
+		if (File.is_open()) {
 
-			MovePipe pipe2;
-			File >> x >> y >> w >> h >> poz >> type;
+			int x, y, w, h; bool poz, type;
+			while (File >> x >> y >> w >> h >> poz >> type) {
 
-			pipe2.setD(x, y, h, w);
-			pipe2.setPoz(poz);
-			if (type)
-				pipe2.setType();
+				MovePipe pipe;
 
-			pipes.push_back({ pipe,pipe2 });
+				pipe.setD(x, y, h, w);
+				//up/down
+				pipe.setPoz(poz);
+				//movePipe?
+				if (type)
+					pipe.setType();
+
+				MovePipe pipe2;
+				File >> x >> y >> w >> h >> poz >> type;
+
+				pipe2.setD(x, y, h, w);
+				pipe2.setPoz(poz);
+				if (type)
+					pipe2.setType();
+
+				pipes.push_back({ pipe,pipe2 });
+			}
+			File.close();
 		}
-		File.close();
+	} catch (runtime_error& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		isRunning = false;
+		return;
 	}
 }
 
@@ -267,14 +306,14 @@ bool Game::checkCollision(){
 
 		if ((player_rect->x + player_rect->w) >= pipe.first.getX() && player_rect->x <= (pipe.first.getX() + pipe.first.getWidth())) {
 			if (player_rect->y <= (pipe.first.getY() + pipe.first.getHeight())) {
-				isRunning = false;
+				game = false;
 				break;
 			}
 		}
 
 		if ((player_rect->x + player_rect->w) >= pipe.second.getX() && player_rect->x <= (pipe.second.getX() + pipe.second.getWidth())) {
 			if ((player_rect->y + player_rect->h) >= (pipe.second.getY() - pipe.second.getHeight())) {
-				isRunning = false;
+				game = false;                                             
 				break;
 			}
 		}
@@ -332,7 +371,7 @@ void Game::handleEvents() {
 			game = false;
 		} else 
 		if (event.key.keysym.sym == SDLK_ESCAPE && game == false) {
-				game = true;
+			game = true;
 		}
 
 		//tasta 's' - save Game

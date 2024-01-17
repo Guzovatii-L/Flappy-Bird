@@ -13,8 +13,8 @@ int main(int argc, char* args[]) {
 
 	Game* game = new Game(600, 800);
 
-	game->init("joc", 200, 200, 800, 600);
-
+	game->init("Flappy Bird", 200, 200, 800, 600);
+	 
 
 	while (game->running()) {
 

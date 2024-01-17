@@ -1,17 +1,4 @@
 New Text Document.txt
-SDL2_image.dll
-joc.sln
-joc.vcxproj
-joc.vcxproj.filters
-joc.vcxproj.user
-libpng16-16.dll
-textures/
-x64/
-zlib1.dll
+
 .vs/
-RubikScribble-Regular.ttf
-SDL2_ttf.dll
-game.txt
-player.txt
-pipes.txt
-score.txt
+x64/

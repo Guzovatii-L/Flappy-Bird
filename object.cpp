@@ -2,8 +2,6 @@
 
 Object::Object() {
 	tex = NULL;
-	dest.h = NULL;
-	dest.w = NULL;
 }
 
 Object::~Object() {
